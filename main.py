@@ -15,20 +15,33 @@ client = commands.Bot(command_prefix="i")
 async def on_ready():
     print("Im on.")
 
+
+
+        # print(next(resQ.results)["subpod"]["img"]["@src"])
+
+
 @client.command()
 async def mup(ctx):
     await ctx.send("Im ready.")
 
 @client.command()
 async def math(ctx, *, question):
+
+            #initialized wolframalpha client with api token from .env file
     math = wolframalpha.Client(os.environ.get('Wolframaplha_API'))
+            #query question from api and put it in resQ
     resQ = math.query(str(question))
     # print(next(resQ.title).text)
+            #find the actual answer in text
     answer = next(resQ.results).text
-
-    e = discord.Embed(color=0x7289da, title = f"{answer}")
-    e.set_footer(text= f'Requested by {ctx.author}' , icon_url=ctx.author.avatar_url)
+    image_addy= "https://www.iconsdb.com/icons/preview/red/wolfram-alpha-xxl.png"
+    e = discord.Embed(color=0x7289da, description = f"{answer}")
+    e.set_footer(text= f'Requested by {ctx.author}' , icon_url=image_addy)
     await ctx.send(embed = e)
+
+
+
+
 
 
 @client.command(aliases = ["tran"])
@@ -69,5 +82,28 @@ async def translate(ctx,lang_to,*,argument):
 
             #send it on discord
     await ctx.send(embed = e)
+
+@client.event
+async def on_message(message):
+    await client.process_commands(message)
+    if client.user == message.author:
+        return
+    if "<@!840905807717335040>" in message.content:
+        content = message.content
+        content = content.replace("<@!840905807717335040>", " ")
+        math = wolframalpha.Client(os.environ.get('Wolframaplha_API'))
+        resQ = math.query(str(content))
+
+        try:
+            # answer = next(resQ.results).text
+
+            Answer_image = next(resQ.results)["subpod"]["img"]["@src"]
+            image_addy = "https://www.iconsdb.com/icons/preview/red/wolfram-alpha-xxl.png"
+            e = discord.Embed(color=0x7289da)
+            e.set_image(url=Answer_image)
+            e.set_footer(text=f'Requested by {message.author}', icon_url=image_addy)
+            await message.channel.send(embed=e)
+        except StopIteration:
+            await message.channel.send("I have no answers for you. :( ")
 
 client.run(os.environ.get('Bot_Token'))

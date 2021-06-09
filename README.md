@@ -1,2 +1,3 @@
-!Private contains all the key files so its not uploaded
-This bot uses Wolframalpha API to answer some math questions
+all tokens and api keys are private! Get your own.
+This bot uses Wolframalpha API to answer some math questions.
+This bot also uses Google translate from any known human languge to any other know human language.

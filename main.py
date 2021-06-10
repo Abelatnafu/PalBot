@@ -4,7 +4,8 @@ import wolframalpha
 import googletrans
 from dotenv import load_dotenv
 import os
-
+import ed
+import asyncio
 load_dotenv()
 
 
@@ -30,15 +31,25 @@ async def math(ctx, *, question):
 
             #initialized wolframalpha client with api token from .env file
     math = wolframalpha.Client(os.environ.get('Wolframaplha_API'))
+    try:
             #query question from api and put it in resQ
-    resQ = math.query(str(question))
-    # print(next(resQ.title).text)
-            #find the actual answer in text
-    answer = next(resQ.results).text
-    image_addy= "https://www.iconsdb.com/icons/preview/red/wolfram-alpha-xxl.png"
-    e = discord.Embed(color=0xe74c3c, description = f"{answer}")
-    e.set_footer(text= f'Requested by {ctx.author}' , icon_url=image_addy)
-    await ctx.send(embed = e)
+        resQ = math.query(str(question))
+        # print(next(resQ.title).text)
+                #find the actual answer in text
+        answer = next(resQ.results).text
+        # print(dir(ctx))
+                #image for logo
+        image_addy= "https://www.iconsdb.com/icons/preview/red/wolfram-alpha-xxl.png"
+                #embedding to send
+        e = discord.Embed(color=0xe74c3c, description = f"{answer}")
+        e.set_footer(text= f'Requested by {ctx.author}' , icon_url=image_addy)
+                #Say typing and wait 2 second then send the embedding
+        await ctx.trigger_typing()
+        await asyncio.sleep(2)
+        await ctx.send(embed = e)
+                #catch exception if we didn't find an answer
+    except StopIteration:
+        await ctx.send("I have no answers for you. :( ")
 
 
 
@@ -87,8 +98,10 @@ async def translate(ctx,lang_to,*,argument):
 @client.event
 async def on_message(message):
     await client.process_commands(message)
+            #check if author is bot
     if client.user == message.author:
         return
+            #check if PalBot is @ed
     if "<@!840905807717335040>" in message.content:
         content = message.content
         content = content.replace("<@!840905807717335040>", " ")
@@ -97,12 +110,15 @@ async def on_message(message):
 
         try:
             # answer = next(resQ.results).text
-
+                #obtain image answer
             Answer_image = next(resQ.results)["subpod"]["img"]["@src"]
             image_addy = "https://www.iconsdb.com/icons/preview/red/wolfram-alpha-xxl.png"
             e = discord.Embed(color=0xe74c3c)
             e.set_image(url=Answer_image)
             e.set_footer(text=f'Requested by {message.author}', icon_url=image_addy)
+            # print(dir(message.channel))
+            await message.channel.trigger_typing()
+            await asyncio.sleep(2)
             await message.channel.send(embed=e)
         except StopIteration:
             await message.channel.send("I have no answers for you. :( ")
@@ -116,7 +132,7 @@ async def help(ctx):
     embedding.set_footer(text="© 2021 Palgorithm", icon_url=image_addy)
     # embedding.set_image(url=image_addy)
     embedding.add_field(name="imath 'question'" , value='To get a copyable answer from wolframAlpha', inline=False)
-    embedding.add_field(name="itran 'language to translate to' 'What to translate?'", value= "To translate anything.",inline=False)
+    embedding.add_field(name="itran 'language to translate to' 'What to translate?'", value= "To translate anything using google translate.",inline=False)
     embedding.add_field(name="@PalBot 'question'", value="- To get an image answer from wolframAlpha.", inline=False)
     embedding.set_thumbnail(url=image_addy)
     await ctx.send(embed= embedding)

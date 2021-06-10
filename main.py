@@ -10,6 +10,7 @@ load_dotenv()
 
 client = discord.Client()
 client = commands.Bot(command_prefix="i")
+client.remove_command("help")
 
 @client.event
 async def on_ready():
@@ -35,7 +36,7 @@ async def math(ctx, *, question):
             #find the actual answer in text
     answer = next(resQ.results).text
     image_addy= "https://www.iconsdb.com/icons/preview/red/wolfram-alpha-xxl.png"
-    e = discord.Embed(color=0x7289da, description = f"{answer}")
+    e = discord.Embed(color=0xe74c3c, description = f"{answer}")
     e.set_footer(text= f'Requested by {ctx.author}' , icon_url=image_addy)
     await ctx.send(embed = e)
 
@@ -76,7 +77,7 @@ async def translate(ctx,lang_to,*,argument):
         pronunciation = transed.pronunciation
 
             #embed the information in a box to send it
-    e = discord.Embed(color=0x7289da, title=f"{transed.text} \nPronounced '{pronunciation}'")
+    e = discord.Embed(color=0xe74c3c, title=f"{transed.text} \nPronounced '{pronunciation}'")
     imageAdd = "https://cdn3.iconfinder.com/data/icons/google-suits-1/32/18_google_translate_text_language_translation-512.png"
     e.set_footer(text="Google translate", icon_url=imageAdd)
 
@@ -99,11 +100,24 @@ async def on_message(message):
 
             Answer_image = next(resQ.results)["subpod"]["img"]["@src"]
             image_addy = "https://www.iconsdb.com/icons/preview/red/wolfram-alpha-xxl.png"
-            e = discord.Embed(color=0x7289da)
+            e = discord.Embed(color=0xe74c3c)
             e.set_image(url=Answer_image)
             e.set_footer(text=f'Requested by {message.author}', icon_url=image_addy)
             await message.channel.send(embed=e)
         except StopIteration:
             await message.channel.send("I have no answers for you. :( ")
 
+@client.command()
+async def help(ctx):
+    # descript= "imath - to get a copyable answer from wolframAlpha \n@PalBot 'question'- to get an image answer. \
+    # nitran 'language to translate to' 'What to translate?' - to translate anything."
+    embedding = discord.Embed(color=0xe74c3c, title="PalBot")
+    image_addy = "https://www.iconsdb.com/icons/preview/red/wolfram-alpha-xxl.png"
+    embedding.set_footer(text="© 2021 Palgorithm", icon_url=image_addy)
+    # embedding.set_image(url=image_addy)
+    embedding.add_field(name="imath 'question'" , value='To get a copyable answer from wolframAlpha', inline=False)
+    embedding.add_field(name="itran 'language to translate to' 'What to translate?'", value= "To translate anything.",inline=False)
+    embedding.add_field(name="@PalBot 'question'", value="- To get an image answer from wolframAlpha.", inline=False)
+    embedding.set_thumbnail(url=image_addy)
+    await ctx.send(embed= embedding)
 client.run(os.environ.get('Bot_Token'))

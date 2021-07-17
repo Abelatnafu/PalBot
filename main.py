@@ -18,10 +18,6 @@ async def on_ready():
     print("Im on.")
 
 
-
-        # print(next(resQ.results)["subpod"]["img"]["@src"])
-
-
 @client.command()
 async def mup(ctx):
     await ctx.send("Im ready.")
@@ -34,10 +30,9 @@ async def math(ctx, *, question):
     try:
             #query question from api and put it in resQ
         resQ = math.query(str(question))
-        # print(next(resQ.title).text)
                 #find the actual answer in text
         answer = next(resQ.results).text
-        # print(dir(ctx))
+        
                 #image for logo
         image_addy= "https://www.iconsdb.com/icons/preview/red/wolfram-alpha-xxl.png"
                 #embedding to send
@@ -67,7 +62,6 @@ async def translate(ctx,lang_to,*,argument):
     if lang_to == "chinese":
         lang_to = "zh-cn"
 
-    # print(googletrans.LANGUAGES)
 
             #Check if the languge we are translating too is found in the list
     if lang_to not in googletrans.LANGUAGES and lang_to not in googletrans.LANGCODES:
@@ -109,14 +103,12 @@ async def on_message(message):
         resQ = math.query(str(content))
 
         try:
-            # answer = next(resQ.results).text
                 #obtain image answer
             Answer_image = next(resQ.results)["subpod"]["img"]["@src"]
             image_addy = "https://www.iconsdb.com/icons/preview/red/wolfram-alpha-xxl.png"
             e = discord.Embed(color=0xe74c3c)
             e.set_image(url=Answer_image)
             e.set_footer(text=f'Requested by {message.author}', icon_url=image_addy)
-            # print(dir(message.channel))
             await message.channel.trigger_typing()
             await asyncio.sleep(2)
             await message.channel.send(embed=e)
